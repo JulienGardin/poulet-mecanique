@@ -3,16 +3,14 @@ package fr.arkyan.popo.pouletmecaniquebackend.data.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 
 @Entity
 @Data
+@NoArgsConstructor
 @RequiredArgsConstructor
 public class Feed {
 
