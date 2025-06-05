@@ -1,0 +1,41 @@
+<form (ngSubmit)="submit()" [formGroup]="form">
+    
+    <mat-dialog-content class="mat-typography">
+
+        <mat-form-field>
+            <mat-label>Titre</mat-label>
+            <input matInput formControlName="label" required>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Canal discord</mat-label>
+            <mat-select formControlName="discordChannel">
+                @for (channel of channels; track channel) {
+                <mat-option [value]="channel.id">{{channel.label}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Url</mat-label>
+            <input matInput formControlName="url" required>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Icon</mat-label>
+            <input matInput formControlName="icon" required>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Filtre</mat-label>
+            <input matInput formControlName="filter">
+        </mat-form-field>
+
+    
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="reset" matButton mat-dialog-close>Annuler</button>
+        <button type="submit" matButton [mat-dialog-close]="true">Enregistrer</button>
+    </mat-dialog-actions>
+
+</form>
