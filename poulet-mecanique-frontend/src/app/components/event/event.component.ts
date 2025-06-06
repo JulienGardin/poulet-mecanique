@@ -1,43 +1,43 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { RssDialog } from './rss.dialog';
-import { FeedProperty } from '../../data/feed-property';
-import { FeedPropertyService } from '../../services/feed-property.service';
 import { DiscordChannel } from '../../data/discord-channel';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DiscordDataService } from '../../services/discord-data.service';
 import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { EventProperty } from '../../data/event-property';
+import { EventPropertyService } from '../../services/event-property.service';
+import { EventDialog } from './event.dialog';
 
 @Component({
-  selector: 'app-rss',
+  selector: 'app-event',
   imports: [CommonModule, MatTableModule, MatButtonModule, MatIconModule, MatDialogModule],
-  templateUrl: './rss.component.html',
-  styleUrl: './rss.component.scss'
+  templateUrl: './event.component.html',
+  styleUrl: './event.component.scss'
 })
-export class RssComponent implements OnInit{
+export class EventComponent implements OnInit {
   
   readonly dialog = inject(MatDialog);
-  readonly rssConfigService = inject(FeedPropertyService);
+  readonly eventConfigService = inject(EventPropertyService);
   readonly discordDataService = inject(DiscordDataService);
 
-  data: FeedProperty[] = [];
+  data: EventProperty[] = [];
   channels: DiscordChannel[] = [];
 
-  displayedColumns: string[] = ['icon', 'label', 'channel', 'url', 'action'];
+  displayedColumns: string[] = ['label', 'channel', 'category', 'action'];
 
   ngOnInit(): void {
     this.loadList();
   }
 
   loadList() {
-    this.rssConfigService.list().subscribe({
+    this.eventConfigService.list().subscribe({
       next: (data) => {
         this.data = data;
       },
       error: (err) => { 
-        console.error('Error loading RSS list:', err);
+        console.error('Error loading Event list:', err);
       }
     });
     this.discordDataService.channels().subscribe({
@@ -50,18 +50,18 @@ export class RssComponent implements OnInit{
     });
   }
 
-  openDialog(rssConfig: FeedProperty | null = null): void {
-    const dialogRef = this.dialog.open(RssDialog, {data: rssConfig});
-    dialogRef.afterClosed().subscribe(result => {
-      if (!result) return;
-      this.data = [];
-      this.loadList();
-    });
+  openDialog(eventConfig: EventProperty | null = null): void {
+      const dialogRef = this.dialog.open(EventDialog, {data: eventConfig});
+      dialogRef.afterClosed().subscribe(result => {
+        if (!result) return;
+        this.data = [];
+        this.loadList();
+      });
   }
 
-  delete(eventConfig: FeedProperty): void {
+  delete(eventConfig: EventProperty): void {
     if (!eventConfig) return;
-    this.rssConfigService.delete(eventConfig.id).subscribe({
+    this.eventConfigService.delete(eventConfig.id).subscribe({
       next: () => {
         this.data = this.data.filter(item => item.id !== eventConfig.id);
       },
@@ -70,7 +70,7 @@ export class RssComponent implements OnInit{
       }
     });
   }
-
+  
   getChannelLabel(channelId: string): string {
     const channel = this.channels.find(c => c.id === channelId);
     return channel ? channel.label : channelId;

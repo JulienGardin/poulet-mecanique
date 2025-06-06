@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { RssComponent } from '../rss/rss.component';
-import { GuildiComponent } from '../guildi/guildi.component';
-import { MatSortModule } from '@angular/material/sort';
+import { EventComponent } from '../event/event.component';
 
 @Component({
   selector: 'app-body',
-  imports: [MatTabsModule, RssComponent, GuildiComponent],
+  imports: [MatTabsModule, RssComponent, EventComponent],
   templateUrl: './body.component.html',
   styleUrl: './body.component.scss'
 })
