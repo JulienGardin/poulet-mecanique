@@ -128,7 +128,7 @@ public class FeedScheduler {
             return "";
         }
         // Remove HTML tags and decode HTML entities
-        String cleaned = value.replaceAll("<[^>]*>", "").replaceAll("&nbsp;", " ").trim();
+        String cleaned = value.replaceAll("<[^>]*>", "").replace("&nbsp;", " ").trim();
 
         return cleaned.length() > 256 ? cleaned.substring(0, 256) + "..." : cleaned;
     }

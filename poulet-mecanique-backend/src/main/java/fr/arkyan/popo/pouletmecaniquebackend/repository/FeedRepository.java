@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public interface FeedRepository extends JpaRepository<Feed, String> {
 

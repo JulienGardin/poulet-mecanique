@@ -12,20 +12,20 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class GuildiServiceTest {
+class GuildiServiceTest {
 
     @Autowired
     private IGuildiService guildiService;
 
     @Test
-    public void testGetGuildiEvents() {
+    void testGetGuildiEvents() {
         List<GuildiEvent> events = guildiService.getGuildiEvents();
         assertNotNull(events);
         assertFalse(events.isEmpty());
     }
 
     @Test
-    public void testGetGuildiCategories() {
+    void testGetGuildiCategories() {
         List<String> categories = guildiService.getGuildiCategories();
         assertNotNull(categories);
         assertFalse(categories.isEmpty());

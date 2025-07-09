@@ -3,8 +3,10 @@ package fr.arkyan.popo.pouletmecaniquebackend.data.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 

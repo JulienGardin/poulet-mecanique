@@ -8,6 +8,8 @@ class PouletMecaniqueBackendApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Nothing to do here
+		// This test is just to ensure that the Spring application context loads successfully.
 	}
 
 }

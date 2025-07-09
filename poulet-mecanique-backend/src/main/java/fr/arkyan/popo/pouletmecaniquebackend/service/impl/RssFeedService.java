@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -31,8 +30,11 @@ public class RssFeedService implements IRssFeedService {
             }
             return new SyndFeedInput().build(new XmlReader(response.body()));
 
-        } catch (IOException | InterruptedException | FeedException e) {
+        } catch (IOException | FeedException e) {
             throw new RssFeedException(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            throw new RssFeedException("Interrupted while fetching RSS feed (" + url + ")", e);
         }
 
     }

@@ -2,6 +2,7 @@ package fr.arkyan.popo.pouletmecaniquebackend.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fr.arkyan.popo.pouletmecaniquebackend.data.dto.GuildiEvent;
+import fr.arkyan.popo.pouletmecaniquebackend.exception.GuildiException;
 import fr.arkyan.popo.pouletmecaniquebackend.service.IGuildiService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -61,10 +62,13 @@ public class GuildiService implements IGuildiService {
                 .build();
 
         try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            client.send(request, HttpResponse.BodyHandlers.ofString());
             return cookieCsrf.getCookie();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            throw new GuildiException("Interrupted while retrieving auth cookie", e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve auth cookie", e);
+            throw new GuildiException("Failed to retrieve auth cookie", e);
         }
 
     }
@@ -80,7 +84,7 @@ public class GuildiService implements IGuildiService {
             String cookie = response.headers().allValues("Set-Cookie").stream()
                     .filter(header -> header.startsWith("PHPSESSID="))
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("No Set-Cookie header found"))
+                    .orElseThrow(() -> new GuildiException("No Set-Cookie header found"))
                     .split(";")[0];
 
             // Extract CSRF token
@@ -88,8 +92,11 @@ public class GuildiService implements IGuildiService {
             String csrf = doc.select("input[name=csrf_login]").val();
 
             return new CookieCsrf(csrf, cookie);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            throw new GuildiException("Interrupted while retrieving CSRF token", e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve CSRF token", e);
+            throw new GuildiException("Failed to retrieve CSRF token", e);
         }
     }
 
@@ -110,8 +117,11 @@ public class GuildiService implements IGuildiService {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
             return new ObjectMapper().readValue(body, new ObjectMapper().getTypeFactory().constructCollectionType(List.class, GuildiEvent.class));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            throw new GuildiException("Interrupted while retrieving Guildi events", e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve Guildi events", e);
+            throw new GuildiException("Failed to retrieve Guildi events", e);
         }
 
     }
@@ -130,7 +140,7 @@ public class GuildiService implements IGuildiService {
             Element divCategories = doc.selectFirst("div.raid-categories");
 
             if (divCategories == null) {
-                throw new RuntimeException("No categories found in the response");
+                throw new GuildiException("No categories found in the response");
             }
 
             return divCategories.select("a").stream()
@@ -139,8 +149,11 @@ public class GuildiService implements IGuildiService {
                     .map(url -> url.substring(url.lastIndexOf("/") + 1))
                     .toList();
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+            throw new GuildiException("Interrupted while retrieving Guildi categories", e);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve Guildi categories", e);
+            throw new GuildiException("Failed to retrieve Guildi categories", e);
         }
 
     }

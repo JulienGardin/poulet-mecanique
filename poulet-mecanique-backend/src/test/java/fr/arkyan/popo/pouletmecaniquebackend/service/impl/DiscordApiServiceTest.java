@@ -1,13 +1,12 @@
 package fr.arkyan.popo.pouletmecaniquebackend.service.impl;
 
-import com.rometools.rome.feed.synd.SyndFeed;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class DiscordApiServiceTest {
+class DiscordApiServiceTest {
 
     @Autowired
     private DiscordApiService discordApiService;

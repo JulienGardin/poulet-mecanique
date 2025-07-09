@@ -1,11 +1,8 @@
 package fr.arkyan.popo.pouletmecaniquebackend.scheduler;
 
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndFeed;
 import fr.arkyan.popo.pouletmecaniquebackend.data.dto.GuildiEvent;
 import fr.arkyan.popo.pouletmecaniquebackend.data.entity.Event;
 import fr.arkyan.popo.pouletmecaniquebackend.data.entity.EventProperty;
-import fr.arkyan.popo.pouletmecaniquebackend.data.entity.FeedProperty;
 import fr.arkyan.popo.pouletmecaniquebackend.repository.EventRepository;
 import fr.arkyan.popo.pouletmecaniquebackend.service.IDiscordApiService;
 import fr.arkyan.popo.pouletmecaniquebackend.service.IEventPropertyService;
@@ -21,11 +18,8 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -148,7 +142,7 @@ public class EventScheduler {
     }
 
     public static Color parseColor(String input) {
-        Pattern c = Pattern.compile("rgb *\\( *([0-9]+), *([0-9]+), *([0-9]+) *\\)");
+        Pattern c = Pattern.compile("rgb *\\( *([\\d]+), *([\\d]+), *([\\d]+) *\\)");
         Matcher m = c.matcher(input);
 
         if (m.matches()) {

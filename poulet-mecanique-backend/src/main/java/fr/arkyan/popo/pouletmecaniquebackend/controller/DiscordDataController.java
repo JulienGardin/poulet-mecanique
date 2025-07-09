@@ -14,7 +14,7 @@ import java.util.List;
 public class DiscordDataController {
 
     @Autowired
-    IDiscordApiService discordApiService;
+    private IDiscordApiService discordApiService;
 
     @GetMapping("/channels")
     public List<DiscordChannel> getDiscordChannels() {
