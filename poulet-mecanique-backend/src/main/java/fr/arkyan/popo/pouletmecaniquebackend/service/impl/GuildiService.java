@@ -1,6 +1,7 @@
 package fr.arkyan.popo.pouletmecaniquebackend.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import fr.arkyan.popo.pouletmecaniquebackend.data.dto.GuildiEvent;
 import fr.arkyan.popo.pouletmecaniquebackend.exception.GuildiException;
 import fr.arkyan.popo.pouletmecaniquebackend.service.IGuildiService;
@@ -116,7 +117,10 @@ public class GuildiService implements IGuildiService {
         try (HttpClient client = HttpClient.newHttpClient()) {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
-            return new ObjectMapper().readValue(body, new ObjectMapper().getTypeFactory().constructCollectionType(List.class, GuildiEvent.class));
+            ObjectMapper mapper = JsonMapper.builder()
+                    .findAndAddModules()
+                    .build();
+            return mapper.readValue(body, new ObjectMapper().getTypeFactory().constructCollectionType(List.class, GuildiEvent.class));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
             throw new GuildiException("Interrupted while retrieving Guildi events", e);

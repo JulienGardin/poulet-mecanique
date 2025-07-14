@@ -82,9 +82,8 @@ public class EventScheduler {
                     .findFirst();
             if(property.isPresent()){
                 sendToDiscord(property.get(), event, false);
-                Event dbEvent = new Event(event.getUrl(), LocalDate.from(dtf.parse(event.getStart())));
-                LocalDateTime date = LocalDateTime.from(dtf.parse(event.getStart()));
-                long remaining = LocalDateTime.now().until(date, ChronoUnit.HOURS);
+                Event dbEvent = new Event(event.getUrl(), event.getStart().toLocalDate());
+                long remaining = LocalDateTime.now().until(event.getStart(), ChronoUnit.HOURS);
                 if(remaining < 24){
                     dbEvent.setReminder24hDone(true);
                 }
@@ -108,8 +107,7 @@ public class EventScheduler {
             }
 
             Event dbEvent = eventRepository.findById(event.getUrl()).orElseThrow();
-            LocalDateTime date = LocalDateTime.from(dtf.parse(event.getStart()));
-            long remaining = LocalDateTime.now().until(date, ChronoUnit.HOURS);
+            long remaining = LocalDateTime.now().until(event.getStart(), ChronoUnit.HOURS);
             if(!dbEvent.isReminder24hDone() && remaining < 24 && remaining >= 3) {
                 log.info("Sending 24h reminder for event: {}", event.getTitle());
                 sendToDiscord(property.get(), event, true);
@@ -130,7 +128,7 @@ public class EventScheduler {
         MessageEmbed msg = new EmbedBuilder()
                 .setTitle(event.getTitle(), event.getUrl())
                 .setAuthor("Calendrier | " + eventProperty.getLabel(), guildiUrl, guildiIcon)
-                .setTimestamp(dtf.parse(event.getStart()))
+                .setTimestamp(event.getStart())
                 .setColor(parseColor(event.getColor()))
                 .setThumbnail(guildiThumbnail)
                 .setDescription(reminder ? "Un évènement est proche. N'oubliez pas de vous inscrire si ce n'est déjà fait !"

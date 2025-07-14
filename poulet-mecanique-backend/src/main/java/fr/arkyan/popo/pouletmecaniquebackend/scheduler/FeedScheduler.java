@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Predicate;
 
 @Slf4j
@@ -36,6 +38,8 @@ public class FeedScheduler {
     @Autowired
     private IDiscordApiService discordApiService;
 
+    private Map<Long, Integer> errors = new HashMap<>();
+
     @Scheduled(cron = "0 0 0 * * *")
     public void removeOldFeedItemsFromDatabase() {
         feedRepository.removeOlderThan(LocalDate.now().minusDays(10));
@@ -52,7 +56,7 @@ public class FeedScheduler {
             feeds.forEach(this::processFeed);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            discordApiService.sendLogErrorMessage("Error while processing feeds: " + e.getMessage());
+            discordApiService.sendLogErrorMessage("Error while processing feeds: " + e.getClass() + " - " + e.getMessage());
         }
 
     }
@@ -64,9 +68,13 @@ public class FeedScheduler {
         SyndFeed feed;
         try {
             feed = rssFeedService.getRssFeed(feedProperty.getUrl());
+            errors.remove(feedProperty.getId());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            discordApiService.sendLogErrorMessage("Error while processing feed: " + feedProperty.getUrl() + "\n" + e.getMessage());
+            errors.put(feedProperty.getId(), errors.getOrDefault(feedProperty.getId(), 0) + 1);
+            if (errors.get(feedProperty.getId()) == 4 || errors.get(feedProperty.getId()) % 12 == 0) {;
+                discordApiService.sendLogErrorMessage("Error while processing feed since " + errors.get(feedProperty.getId()) + " iterations : " + feedProperty.getUrl() + "\n" + e.getClass() + " : " + e.getMessage());
+            }
             return;
         }
 

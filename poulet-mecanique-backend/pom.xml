@@ -12,7 +12,7 @@
 
 	<groupId>fr.arkyan.popo</groupId>
 	<artifactId>poulet-mecanique-backend</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>war</packaging>
 	<name>poulet-mecanique-backend</name>
 	<description>Bot Discord POPO</description>
@@ -41,6 +41,12 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.19.1</version>
 		</dependency>
 
 		<dependency>
