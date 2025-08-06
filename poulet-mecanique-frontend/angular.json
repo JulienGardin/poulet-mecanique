@@ -65,7 +65,8 @@
               "buildTarget": "poulet-mecanique-frontend:build:production"
             },
             "development": {
-              "buildTarget": "poulet-mecanique-frontend:build:development"
+              "buildTarget": "poulet-mecanique-frontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
