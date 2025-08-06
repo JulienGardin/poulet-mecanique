@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -70,6 +72,8 @@ public class EventScheduler {
             log.error(e.getMessage(), e);
             discordApiService.sendLogErrorMessage("Error while processing events: " + e.getMessage());
         }
+
+        log.info("End Guildi Events scanning...");
 
     }
 
@@ -125,10 +129,13 @@ public class EventScheduler {
 
     private void sendToDiscord(EventProperty eventProperty, GuildiEvent event, boolean reminder) {
 
+        ZoneId zone = ZoneId.of("Europe/Paris");
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(LocalDateTime.now());
+
         MessageEmbed msg = new EmbedBuilder()
                 .setTitle(event.getTitle(), event.getUrl())
                 .setAuthor("Calendrier | " + eventProperty.getLabel(), guildiUrl, guildiIcon)
-                .setTimestamp(event.getStart())
+                .setTimestamp(event.getStart().toInstant(zoneOffSet))
                 .setColor(parseColor(event.getColor()))
                 .setThumbnail(guildiThumbnail)
                 .setDescription(reminder ? "Un évènement est proche. N'oubliez pas de vous inscrire si ce n'est déjà fait !"
