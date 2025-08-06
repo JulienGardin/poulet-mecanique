@@ -14,6 +14,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class RssFeedService implements IRssFeedService {
@@ -22,14 +24,13 @@ public class RssFeedService implements IRssFeedService {
     public SyndFeed getRssFeed(String url) {
 
         try(HttpClient client = HttpClient.newHttpClient()){
-
-            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).build();
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).timeout(Duration.of(30, ChronoUnit.SECONDS)).build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             if (response.statusCode() != 200) {
+                client.shutdownNow();
                 throw new RssFeedException("Failed to fetch RSS feed (" + url + ") : HttpCode " + response.statusCode());
             }
             return new SyndFeedInput().build(new XmlReader(response.body()));
-
         } catch (IOException | FeedException e) {
             throw new RssFeedException(e.getMessage(), e);
         } catch (InterruptedException e) {

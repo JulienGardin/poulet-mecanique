@@ -19,7 +19,9 @@ import java.net.CookieStore;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -60,6 +62,7 @@ public class GuildiService implements IGuildiService {
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Cookie", cookieCsrf.getCookie())
                 .POST(HttpRequest.BodyPublishers.ofString(postBody))
+                .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .build();
 
         try (HttpClient client = HttpClient.newHttpClient()) {
@@ -77,6 +80,7 @@ public class GuildiService implements IGuildiService {
     private CookieCsrf getCsrfToken() {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create(guildiUrl + "/fr/m/mon-compte/connexion"))
+                .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .build();
         try(HttpClient client = HttpClient.newHttpClient()){
             HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -112,6 +116,7 @@ public class GuildiService implements IGuildiService {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create(url))
                 .header("Cookie", authCookie)
+                .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .build();
 
         try (HttpClient client = HttpClient.newHttpClient()) {
@@ -135,6 +140,7 @@ public class GuildiService implements IGuildiService {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(java.net.URI.create(guildiUrl + "/fr/m/raidplanner"))
                 .header("Cookie", authCookie)
+                .timeout(Duration.of(30, ChronoUnit.SECONDS))
                 .build();
 
         try (HttpClient client = HttpClient.newHttpClient()) {
