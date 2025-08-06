@@ -37,9 +37,9 @@ public class EventScheduler {
 
         String titleAppend() {
             return switch (this) {
-                case NEW -> " - Nouvel évènement programmé";
-                case REMINDER_24H -> " - Evènement proche";
-                case REMINDER_3H -> " - Evènement imminent";
+                case NEW -> "";
+                case REMINDER_24H -> " - J-1";
+                case REMINDER_3H -> " - H-3";
             };
         }
 
@@ -157,6 +157,7 @@ public class EventScheduler {
             if(!dbEvent.isReminder3hDone() && remaining < 3) {
                 log.info("Sending 3h reminder for event: {}", event.getTitle());
                 sendToDiscord(property.get(), event, EventType.REMINDER_3H);
+                dbEvent.setReminder24hDone(true);
                 dbEvent.setReminder3hDone(true);
                 eventRepository.save(dbEvent);
             }

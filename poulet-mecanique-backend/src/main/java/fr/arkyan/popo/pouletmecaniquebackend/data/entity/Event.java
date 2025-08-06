@@ -3,10 +3,7 @@ package fr.arkyan.popo.pouletmecaniquebackend.data.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -14,6 +11,7 @@ import java.time.LocalDate;
 @Entity
 @NoArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id
