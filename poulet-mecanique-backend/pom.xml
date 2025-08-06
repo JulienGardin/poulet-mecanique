@@ -12,7 +12,7 @@
 
 	<groupId>fr.arkyan.popo</groupId>
 	<artifactId>poulet-mecanique-backend</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.0</version>
 	<packaging>war</packaging>
 	<name>poulet-mecanique-backend</name>
 	<description>Bot Discord POPO</description>
