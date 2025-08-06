@@ -20,11 +20,6 @@ public class FeedPropertyService implements IFeedPropertyService {
     }
 
     @Override
-    public FeedProperty getById(Long id) {
-        return feedPropertyRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public FeedProperty save(FeedProperty feedProperty) {
         return feedPropertyRepository.save(feedProperty);
     }

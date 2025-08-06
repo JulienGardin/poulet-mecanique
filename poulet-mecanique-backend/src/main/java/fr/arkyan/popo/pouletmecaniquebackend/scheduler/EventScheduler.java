@@ -54,11 +54,20 @@ public class EventScheduler {
 
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * Removes events older than 10 days from the database.
+     * This method is scheduled to run daily at midnight.
+     */
     @Scheduled(cron = "0 0 0 * * *")
     public void removeOldEventItemsFromDatabase() {
         eventRepository.removeOlderThan(LocalDate.now().minusDays(10));
     }
 
+    /**
+     * Scans for new Guildi events every 15 minutes.
+     * It retrieves events from the Guildi service and processes them.
+     * If an error occurs during processing, it logs the error and sends a message to Discord.
+     */
     @Scheduled(cron = "0 */15 * * * ?")
     public void performEventScanning() {
 
@@ -77,6 +86,11 @@ public class EventScheduler {
 
     }
 
+    /**
+     * Processes a GuildiEvent by checking if it is new or old and sending reminders if necessary.
+     * @param event the GuildiEvent to process
+     * @param eventProperties the list of EventProperty to find the corresponding Discord channel
+     */
     private void processEvent(GuildiEvent event, List<EventProperty> eventProperties) {
         if(!eventRepository.existsById(event.getUrl())){
             // New event
@@ -127,6 +141,12 @@ public class EventScheduler {
         }
     }
 
+    /**
+     * Sends a message to Discord with event details.
+     * @param eventProperty the event property containing Discord channel information
+     * @param event the event to be sent
+     * @param reminder true if this is a reminder message, false for a new event notification
+     */
     private void sendToDiscord(EventProperty eventProperty, GuildiEvent event, boolean reminder) {
 
         ZoneId zone = ZoneId.of("Europe/Paris");
@@ -146,6 +166,12 @@ public class EventScheduler {
 
     }
 
+    /**
+     * Parses a color string in the format "rgb(r, g, b)" and returns a Color object.
+     * If the input does not match the expected format, it returns null.
+     * @param input the color string to parse
+     * @return a Color object or null if the input is invalid
+     */
     public static Color parseColor(String input) {
         Pattern c = Pattern.compile("rgb *\\( *([\\d]+), *([\\d]+), *([\\d]+) *\\)");
         Matcher m = c.matcher(input);

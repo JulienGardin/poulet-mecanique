@@ -10,6 +10,8 @@ public interface IDiscordApiService {
 
     List<Category> getCategories();
 
+     * Retrieves a list of text channels in the Discord server.
+     * @return a list of text channels
     List<TextChannel> getTextChannels();
 
     void sendLogErrorMessage(String message);

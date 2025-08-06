@@ -40,11 +40,20 @@ public class FeedScheduler {
 
     private Map<Long, Integer> errors = new HashMap<>();
 
+    /**
+     * Removes feed older than 10 days from the database.
+     * This method is scheduled to run daily at midnight.
+     */
     @Scheduled(cron = "0 0 0 * * *")
     public void removeOldFeedItemsFromDatabase() {
         feedRepository.removeOlderThan(LocalDate.now().minusDays(10));
     }
 
+    /**
+     * Scheduled method to scan RSS feeds every 15 minutes.
+     * It retrieves all feed properties and processes each feed.
+     * If an error occurs during processing, it logs the error and sends a message to Discord.
+     */
     @Scheduled(cron = "0 */15 * * * ?")
     public void performRssScanning() {
 
@@ -61,6 +70,10 @@ public class FeedScheduler {
 
     }
 
+    /**
+     * Processes each feed property by fetching the RSS feed and filtering entries.
+     * @param feedProperty The feed property to process.
+     */
     private void processFeed(FeedProperty feedProperty) {
 
         log.info("Processing feed: {}", feedProperty.getUrl());
@@ -87,15 +100,31 @@ public class FeedScheduler {
 
     }
 
+    /**
+     * Checks if the SyndEntry was published within the last 2 days.
+     * @param syndEntry The SyndEntry to check.
+     * @return true if the entry is from less than 2 days ago, false otherwise.
+     */
     private boolean isFromLessThan2DaysAgo(SyndEntry syndEntry) {
         return syndEntry.getPublishedDate() != null
                 && syndEntry.getPublishedDate().toInstant().isAfter(LocalDate.now().minusDays(2).atStartOfDay().toInstant(ZoneOffset.UTC));
     }
 
+    /**
+     * Checks if the SyndEntry has not already been processed.
+     * @param syndEntry The SyndEntry to check.
+     * @return true if the entry has not been processed, false otherwise.
+     */
     private boolean hasNotAlreadyBeenProcessed(SyndEntry syndEntry) {
         return !feedRepository.existsById(syndEntry.getLink());
     }
 
+    /**
+     * Creates a predicate to filter SyndEntry based on the title.
+     * If the filter is null or empty, it matches all entries.
+     * @param filter The filter string to match against entry titles.
+     * @return A predicate that checks if the entry title contains the filter string.
+     */
     private Predicate<? super SyndEntry> titleMatches(String filter) {
         if (filter == null || filter.isBlank()) {
             return entry -> true; // No filter, match all
@@ -104,6 +133,12 @@ public class FeedScheduler {
         return entry -> entry.getTitle() != null && entry.getTitle().toLowerCase().contains(lowerCaseFilter);
     }
 
+    /**
+     * Processes each SyndEntry by sending it to Discord and saving it to the database.
+     * @param feedProperty The feed property associated with the entry.
+     * @param feed The SyndFeed containing the entry.
+     * @param entry The SyndEntry to process.
+     */
     private void processFeedEntries(FeedProperty feedProperty, SyndFeed feed, SyndEntry entry) {
 
         try {
@@ -118,6 +153,12 @@ public class FeedScheduler {
 
     }
 
+    /**
+     * Sends the SyndEntry to Discord as a message embed.
+     * @param feedProperty The feed property containing Discord channel information.
+     * @param feed The SyndFeed containing the entry.
+     * @param entry The SyndEntry to send.
+     */
     private void sendToDiscord(FeedProperty feedProperty, SyndFeed feed, SyndEntry entry) {
 
         MessageEmbed msg = new EmbedBuilder()
@@ -131,6 +172,12 @@ public class FeedScheduler {
 
     }
 
+    /**
+     * Cleans the description by removing HTML tags and decoding HTML entities.
+     * If the cleaned description exceeds 256 characters, it truncates it and appends "..." at the end.
+     * @param value The description value to clean.
+     * @return A cleaned CharSequence representation of the description.
+     */
     private CharSequence cleanDescription(String value) {
         if (value == null) {
             return "";

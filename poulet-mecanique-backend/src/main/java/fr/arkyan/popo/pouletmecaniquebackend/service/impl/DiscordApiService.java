@@ -44,11 +44,6 @@ public class DiscordApiService implements IDiscordApiService {
     }
 
     @Override
-    public List<Category> getCategories() {
-        return guild.getCategories();
-    }
-
-    @Override
     public List<TextChannel> getTextChannels() {
         return guild.getTextChannels();
     }
