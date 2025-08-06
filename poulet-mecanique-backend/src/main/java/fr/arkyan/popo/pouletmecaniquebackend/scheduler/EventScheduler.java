@@ -31,6 +31,28 @@ import java.util.regex.Pattern;
 @Component
 public class EventScheduler {
 
+    protected enum EventType {
+
+        NEW, REMINDER_24H, REMINDER_3H;
+
+        String titleAppend() {
+            return switch (this) {
+                case NEW -> " - Nouvel évènement programmé";
+                case REMINDER_24H -> " - Evènement proche";
+                case REMINDER_3H -> " - Evènement imminent";
+            };
+        }
+
+        String description() {
+            return switch (this) {
+                case NEW -> "Nouvel évènement programmé. N'oubliez pas de vous inscrire !";
+                case REMINDER_24H -> "Un évènement est proche. N'oubliez pas de vous inscrire si ce n'est déjà fait !";
+                case REMINDER_3H -> "Un évènement est imminent. N'oubliez pas de vous inscrire si ce n'est déjà fait !";
+            };
+        }
+
+    }
+
     @Value("${guildi.url}")
     private String guildiUrl;
 
@@ -99,7 +121,7 @@ public class EventScheduler {
                     .filter(ep -> ep.getCategory().equals(event.getCategory()))
                     .findFirst();
             if(property.isPresent()){
-                sendToDiscord(property.get(), event, false);
+                sendToDiscord(property.get(), event, EventType.NEW);
                 Event dbEvent = new Event(event.getUrl(), event.getStart().toLocalDate());
                 long remaining = LocalDateTime.now().until(event.getStart(), ChronoUnit.HOURS);
                 if(remaining < 24){
@@ -128,13 +150,13 @@ public class EventScheduler {
             long remaining = LocalDateTime.now().until(event.getStart(), ChronoUnit.HOURS);
             if(!dbEvent.isReminder24hDone() && remaining < 24 && remaining >= 3) {
                 log.info("Sending 24h reminder for event: {}", event.getTitle());
-                sendToDiscord(property.get(), event, true);
+                sendToDiscord(property.get(), event, EventType.REMINDER_24H);
                 dbEvent.setReminder24hDone(true);
                 eventRepository.save(dbEvent);
             }
             if(!dbEvent.isReminder3hDone() && remaining < 3) {
                 log.info("Sending 3h reminder for event: {}", event.getTitle());
-                sendToDiscord(property.get(), event, true);
+                sendToDiscord(property.get(), event, EventType.REMINDER_3H);
                 dbEvent.setReminder3hDone(true);
                 eventRepository.save(dbEvent);
             }
@@ -145,21 +167,20 @@ public class EventScheduler {
      * Sends a message to Discord with event details.
      * @param eventProperty the event property containing Discord channel information
      * @param event the event to be sent
-     * @param reminder true if this is a reminder message, false for a new event notification
+     * @param eventType the type of event (new or reminder)
      */
-    private void sendToDiscord(EventProperty eventProperty, GuildiEvent event, boolean reminder) {
+    private void sendToDiscord(EventProperty eventProperty, GuildiEvent event, EventType eventType) {
 
         ZoneId zone = ZoneId.of("Europe/Paris");
         ZoneOffset zoneOffSet = zone.getRules().getOffset(LocalDateTime.now());
 
         MessageEmbed msg = new EmbedBuilder()
-                .setTitle(event.getTitle(), event.getUrl())
+                .setTitle(event.getTitle() + eventType.titleAppend(), event.getUrl())
                 .setAuthor("Calendrier | " + eventProperty.getLabel(), guildiUrl, guildiIcon)
                 .setTimestamp(event.getStart().toInstant(zoneOffSet))
                 .setColor(parseColor(event.getColor()))
                 .setThumbnail(guildiThumbnail)
-                .setDescription(reminder ? "Un évènement est proche. N'oubliez pas de vous inscrire si ce n'est déjà fait !"
-                        : "Nouvel évènement programmé. N'oubliez pas de vous inscrire !")
+                .setDescription(eventType.description())
                 .build();
 
         discordApiService.sendMessage(msg, eventProperty.getDiscordChannel());
