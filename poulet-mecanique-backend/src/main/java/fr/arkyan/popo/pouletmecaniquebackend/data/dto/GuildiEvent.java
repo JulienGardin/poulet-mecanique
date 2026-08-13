@@ -1,10 +1,7 @@
 package fr.arkyan.popo.pouletmecaniquebackend.data.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +10,7 @@ import java.util.regex.Pattern;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class GuildiEvent {
 
     private static final String URL_REGEX = "raidplanner\\/([^\\/]+)\\/([^\\/]+)";

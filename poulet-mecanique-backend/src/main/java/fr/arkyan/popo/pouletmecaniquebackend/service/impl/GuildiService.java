@@ -66,7 +66,12 @@ public class GuildiService implements IGuildiService {
                 .build();
 
         try (HttpClient client = HttpClient.newHttpClient()) {
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =  client.send(request, HttpResponse.BodyHandlers.ofString());
+            response.headers().allValues("set-cookie").stream()
+                    .filter(c -> c.startsWith("PHPSESSID="))
+                    .map(value -> value.split(";")[0])
+                    .findFirst()
+                    .ifPresent(cookieCsrf::setCookie);
             return cookieCsrf.getCookie();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
