@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -68,5 +69,9 @@ public class DiscordApiService implements IDiscordApiService {
         }
     }
 
+    @Override
+    public List<Role> getMentionnableRoles() {
+        return guild.getRoles().stream().filter(Role::isMentionable).toList();
+    }
 
 }
